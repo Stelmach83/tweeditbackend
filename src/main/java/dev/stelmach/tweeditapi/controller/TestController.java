@@ -13,7 +13,7 @@ public class TestController {
 
     @PostMapping("/test")
     public ResponseEntity<TweeditResponse> test(@RequestBody TestDTO test) {
-        TweeditResponse resp = new TweeditResponse(202, "OK", test);
-        return new ResponseEntity<>(resp, HttpStatus.ACCEPTED);
+        TweeditResponse resp = new TweeditResponse(200, "Seems good", test);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 }
