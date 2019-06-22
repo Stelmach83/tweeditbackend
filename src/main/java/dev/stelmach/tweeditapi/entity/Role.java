@@ -1,6 +1,13 @@
 package dev.stelmach.tweeditapi.entity;
 
-public enum Role {
+import org.springframework.security.core.GrantedAuthority;
+
+public enum Role implements GrantedAuthority {
     ADMIN,
-    USER
+    USER;
+
+    @Override
+    public String getAuthority() {
+        return "ROLE_" + this.name();
+    }
 }

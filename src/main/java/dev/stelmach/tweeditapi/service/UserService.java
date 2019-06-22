@@ -9,6 +9,8 @@ public interface UserService {
 
     Optional<User> getUserByEmail(String email);
 
+    Optional<User> getUserByUsername(String username);
+
     List<User> getAllUsers();
 
     List<User> getAllUsersOtherThanLoggedIn(User user);

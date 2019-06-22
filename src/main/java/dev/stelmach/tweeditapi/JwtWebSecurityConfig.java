@@ -1,5 +1,7 @@
-package dev.stelmach.tweeditapi.jwt;
+package dev.stelmach.tweeditapi;
 
+import dev.stelmach.tweeditapi.jwt.JwtTokenAuthorizationOncePerRequestFilter;
+import dev.stelmach.tweeditapi.jwt.JwtUnAuthorizedResponseAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

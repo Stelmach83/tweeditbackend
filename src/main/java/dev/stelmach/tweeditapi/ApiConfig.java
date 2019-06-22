@@ -16,13 +16,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebMvc
-@EnableWebSecurity
+//@EnableWebSecurity
 @Configuration
 @ComponentScan("dev.stelmach.tweeditapi")
 @EnableJpaRepositories(basePackages = "dev.stelmach.tweeditapi.database")
-public class ApiConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+//public class ApiConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+public class ApiConfig implements WebMvcConfigurer {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
@@ -34,23 +35,23 @@ public class ApiConfig extends WebSecurityConfigurerAdapter implements WebMvcCon
                 .allowedOrigins("*");
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
-                .passwordEncoder(getPasswordEncoder());
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.authorizeRequests()
-                .antMatchers("**/app/**").authenticated()
-                .anyRequest().permitAll()
-                .and().formLogin().loginPage("/login")
-                .permitAll()
-                .and()
-                .exceptionHandling().accessDeniedPage("/accessDenied");
-    }
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(userDetailsService)
+//                .passwordEncoder(getPasswordEncoder());
+//    }
+//
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.csrf().disable();
+//        http.authorizeRequests()
+//                .antMatchers("**/app/**").authenticated()
+//                .anyRequest().permitAll()
+//                .and().formLogin().loginPage("/login")
+//                .permitAll()
+//                .and()
+//                .exceptionHandling().accessDeniedPage("/accessDenied");
+//    }
 
     private PasswordEncoder getPasswordEncoder() {
         return new PasswordEncoder() {

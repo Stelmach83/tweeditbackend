@@ -1,38 +1,49 @@
 package dev.stelmach.tweeditapi.jwt;
 
+import dev.stelmach.tweeditapi.entity.User;
+import dev.stelmach.tweeditapi.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
 public class JwtInMemoryUserDetailsService implements UserDetailsService {
 
-    static List<JwtUserDetails> inMemoryUserList = new ArrayList<>();
+    @Autowired
+    private UserService userService;
 
-    static {
-        inMemoryUserList.add(new JwtUserDetails(1L, "in28minutes",
-                "$2a$10$3zHzb.Npv1hfZbLEU5qsdOju/tk2je6W6PnNnY.c1ujWPcZh4PL6e", "ROLE_USER_2"));
-        inMemoryUserList.add(new JwtUserDetails(2L, "ranga",
-                "$2a$10$IetbreuU5KihCkDB6/r1DOJO0VyU9lSiBcrMDT.biU7FOt2oqZDPm", "ROLE_USER_2"));
+    private Optional<User> getUserByEmail(String email) {
+        return userService.getUserByEmail(email);
+    }
 
-        //$2a$10$IetbreuU5KihCkDB6/r1DOJO0VyU9lSiBcrMDT.biU7FOt2oqZDPm
+    private Optional<User> getUser(String username) {
+        return userService.getUserByUsername(username);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<JwtUserDetails> findFirst = inMemoryUserList.stream()
-                .filter(user -> user.getUsername().equals(username)).findFirst();
-
-        if (!findFirst.isPresent()) {
+    public UserDetails loadUserByUsername(String username) {
+        Optional<User> userFromEmail = getUserByEmail(username);
+        Optional<User> userFromUsername = getUser(username);
+        User user;
+        JwtUserDetails jwtUser;
+        if (userFromEmail.isPresent()) {
+            user = userFromEmail.get();
+            jwtUser = new JwtUserDetails(user.getId(), user.getEmail(), user.getPassword());
+        } else if (userFromUsername.isPresent()) {
+            user = userFromUsername.get();
+            jwtUser = new JwtUserDetails(user.getId(), user.getUsername(), user.getPassword());
+        } else {
             throw new UsernameNotFoundException(String.format("USER_NOT_FOUND '%s'.", username));
         }
-
-        return findFirst.get();
+        Collection<? extends GrantedAuthority> userRoles = user.getRoles();
+        jwtUser.setAuthorities(userRoles);
+        return jwtUser;
     }
 
 }
