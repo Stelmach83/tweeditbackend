@@ -18,8 +18,6 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil implements Serializable {
 
-    static final String CLAIM_KEY_USERNAME = "sub";
-    static final String CLAIM_KEY_CREATED = "iat";
     private static final long serialVersionUID = -3301605591108950415L;
     private Clock clock = DefaultClock.INSTANCE;
 
@@ -68,7 +66,6 @@ public class JwtTokenUtil implements Serializable {
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         final Date createdDate = clock.now();
         final Date expirationDate = calculateExpirationDate(createdDate);
-
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(createdDate)
                 .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
