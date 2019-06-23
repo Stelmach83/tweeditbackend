@@ -2,7 +2,6 @@ package dev.stelmach.tweeditapi.jwt;
 
 import dev.stelmach.tweeditapi.entity.User;
 import dev.stelmach.tweeditapi.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,8 +14,11 @@ import java.util.Optional;
 @Service
 public class JwtInMemoryUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public JwtInMemoryUserDetailsService(UserService userService) {
+        this.userService = userService;
+    }
 
     private Optional<User> getUserByEmail(String email) {
         return userService.getUserByEmail(email);

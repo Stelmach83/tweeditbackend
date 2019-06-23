@@ -1,6 +1,5 @@
 package dev.stelmach.tweeditapi.jwt;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +27,17 @@ public class JwtAuthenticationRestController {
     @Value("${jwt.http.request.header}")
     private String tokenHeader;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private UserDetailsService jwtInMemoryUserDetailsService;
+    private final UserDetailsService jwtInMemoryUserDetailsService;
+
+    public JwtAuthenticationRestController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserDetailsService jwtInMemoryUserDetailsService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtInMemoryUserDetailsService = jwtInMemoryUserDetailsService;
+    }
 
     @PostMapping(value = "${jwt.get.token.uri}")
     public ResponseEntity<JwtTokenResponse> createAuthenticationToken(@RequestBody JwtTokenRequest authenticationRequest) {

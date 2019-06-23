@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     @PostMapping("/test")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+//    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<TweeditResponse> test(@RequestBody TestDTO test) {
         TweeditResponse resp = new TweeditResponse(200, "Seems good", test);
         return new ResponseEntity<>(resp, HttpStatus.OK);
