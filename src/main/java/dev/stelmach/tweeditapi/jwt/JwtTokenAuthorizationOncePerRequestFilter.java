@@ -2,6 +2,7 @@ package dev.stelmach.tweeditapi.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,15 +56,19 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
             } catch (IllegalArgumentException e) {
                 log.error("JWT_TOKEN_UNABLE_TO_GET_USERNAME", e);
             } catch (ExpiredJwtException e) {
-                log.warn("JWT_TOKEN_EXPIRED", e);
+                log.warn("JWT_TOKEN_EXPIRED");
+                ResponseDTO responseDTO = authenticationExceptionController.handleExpiredException(e).getBody();
+                prepareResponse(response, responseDTO);
+                return;
             } catch (SignatureException e) {
+                log.warn("JWT_TOKEN_SIGNATURE_ERROR");
                 ResponseDTO responseDTO = authenticationExceptionController.handleSignatureException(e).getBody();
-                response.setStatus(responseDTO != null ? responseDTO.getCode() : 500);
-                response.setContentType("application/json");
-                ObjectMapper mapper = new ObjectMapper();
-                PrintWriter out = response.getWriter();
-                out.print(mapper.writeValueAsString(responseDTO));
-                out.flush();
+                prepareResponse(response, responseDTO);
+                return;
+            } catch (MalformedJwtException e) {
+                log.warn("MALFORMED_JWT_TOKEN");
+                ResponseDTO responseDTO = authenticationExceptionController.handleMalformedJsonException(e).getBody();
+                prepareResponse(response, responseDTO);
                 return;
             }
         } else {
@@ -79,5 +84,14 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private void prepareResponse(HttpServletResponse response, ResponseDTO responseDTO) throws IOException {
+        response.setStatus(responseDTO != null ? responseDTO.getCode() : 500);
+        response.setContentType("application/json");
+        ObjectMapper mapper = new ObjectMapper();
+        PrintWriter out = response.getWriter();
+        out.print(mapper.writeValueAsString(responseDTO));
+        out.flush();
     }
 }

@@ -1,5 +1,7 @@
 package dev.stelmach.tweeditapi.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,17 @@ public class AuthenticationExceptionController {
     }
 
     @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ResponseDTO> handleExpiredException(Exception e) {
+        return new ResponseEntity<>(new ResponseDTO(401, e.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ResponseDTO> handleSignatureException(Exception e) {
+        return new ResponseEntity<>(new ResponseDTO(401, e.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<ResponseDTO> handleMalformedJsonException(Exception e) {
         return new ResponseEntity<>(new ResponseDTO(401, e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
